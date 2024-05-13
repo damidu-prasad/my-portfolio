@@ -4,7 +4,7 @@ import Image from "../assets/avatar.svg";
 import { TypeAnimation } from "react-type-animation";
 import {
   FaGithub,
-  FaYoutube,
+ 
   FaFacebook,
   FaLinkedin,
   FaWhatsapp,
@@ -14,8 +14,7 @@ import {
   FaTelegram,
   FaReddit,
   FaDiscord,
-  FaMailBulk,
-  FaMailchimp,
+ 
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { fadeIn } from "../variants";
@@ -91,9 +90,9 @@ const Banner = () => {
             >
                <Link to="contact"  className="btn btn-lg  flex items-center justify-center">Contact me</Link>
               
-              <a onClick={handleDownload} className="text-gradient btn-link">
+              <button onClick={handleDownload} className="text-gradient btn-link">
                 Download My Cv
-              </a>
+              </button>
             </motion.div>
             <motion.div
               variants={fadeIn("up", 0.7)}
