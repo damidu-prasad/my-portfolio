@@ -80,11 +80,14 @@ const About = () => {
               </div>
             </div>
             <div className="flex gap-x-8 items-center">
-              <Link to="contact"> <button className="btn btn-lg">Contact me</button></Link>
-             
-              <a href="#" className="text-gradient btn-link">
+              <Link to="contact">
+                {" "}
+                <button className="btn btn-lg">Contact me</button>
+              </Link>
+
+              <button className="text-gradient btn-link" onClick={() => {}}>
                 My Portfolio
-              </a>
+              </button>
             </div>
           </motion.div>
         </div>
