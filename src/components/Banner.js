@@ -109,28 +109,28 @@ const Banner = () => {
               <a href="https://web.facebook.com/profile.php?id=61556843999136">
                 <FaFacebook />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaLinkedin />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaWhatsapp />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaTwitter />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaInstagram />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaTiktok />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaTelegram />
               </a>
               <a href="https://www.reddit.com/user/Consistent_Eye_3360/">
                 <FaReddit />
               </a>
-              <a href="#">
+              <a href="www.daminduprasad.site">
                 <FaDiscord />
               </a>
             </motion.div>
