@@ -35,7 +35,7 @@ const About = () => {
               experiance.
             </h3>
             <p className="mb-6">
-              Hello! I'm DAMINDU PRASAD, a passionate Software Engineering
+              Hello! I'm DAMINDU PRASAD, a passionate Senior Software Engineering
               undergraduate at Java Institute for Advanced Technology. With a
               strong foundation in Java and a curiosity-driven approach to
               learning, I'm dedicated to crafting innovative solutions that make
