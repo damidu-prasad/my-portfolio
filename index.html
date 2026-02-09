@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Architect | Immersive 3D Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <!-- 3D Canvas -->
+    <canvas id="webgl"></canvas>
+
+    <!-- Navigation Overlay -->
+    <nav class="hud-nav">
+        <div class="logo">OLIX.AI</div>
+        <div class="nav-links">
+            <a href="#hero">Overview</a>
+            <a href="#projects">Systems</a>
+            <a href="#about">Logic</a>
+            <a href="#contact">Connect</a>
+        </div>
+    </nav>
+
+    <!-- Scroll Content (Overlay) -->
+    <main class="scroll-container">
+
+        <!-- Section 1: Hero (The Sphere) -->
+        <section id="hero" class="hud-section">
+            <div class="hud-content">
+                <span class="hud-label">IDENTITY: VERIFIED</span>
+                <h1 class="glitch-text" data-text="DAMINDU">DAMINDU</h1>
+                <h1 class="glitch-text sub" data-text="PRASAD">PRASAD</h1>
+                <p class="hud-desc">
+                    <span class="highlight">SOFTWARE ENGINEER</span> // FINANCIAL SYSTEMS<br>
+                    Specializing in secure, high-frequency algorithmic architecture.
+                </p>
+                <a href="#projects" class="hud-btn">INITIALIZE PROTOCOL <i data-lucide="chevron-right"></i></a>
+            </div>
+        </section>
+
+        <!-- Section 2: Projects (The Cubes) -->
+        <section id="projects" class="hud-section right-align">
+            <div class="hud-content">
+                <span class="hud-label">MODULES_ACTIVE: 3</span>
+                <h2>DEPLOYED SYSTEMS</h2>
+
+                <div class="project-list">
+                    <div class="project-item active">
+                        <h3>01 // FRAUD DECTECTION</h3>
+                        <p>Real-time transaction monitoring using Deep Learning.</p>
+                    </div>
+                    <div class="project-item">
+                        <h3>02 // ALGO TRADING BOT</h3>
+                        <p>High-frequency arbitrage strategies with Python & C++.</p>
+                    </div>
+                    <div class="project-item">
+                        <h3>03 // RISK ENGINE</h3>
+                        <p>Predictive credit scoring models for enterprise banking.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: About/Skills (The Torus) -->
+        <section id="about" class="hud-section left-align">
+            <div class="hud-content">
+                <span class="hud-label">KERNEL_DATA // PROFILE</span>
+                <h2>ENGINEER PROFILE</h2>
+
+                <div class="profile-card">
+                    <!-- Dummy Photo in HUD Frame -->
+                    <div class="hud-photo-frame">
+                        <img src="https://avatars.githubusercontent.com/u/118725447?s=400&u=f9851c9301ad65232759cf080b7adf0c810084a9&v=4?q=80&w=2574&auto=format&fit=crop"
+                            alt="Damindu Prasad" class="hud-photo">
+                        <div class="scanner-line"></div>
+                    </div>
+
+                    <div class="education-log">
+                        <h4>EDUCATION_LOG:</h4>
+                        <ul>
+                            <li><strong>BIRMINGHAM CITY UNIVERSITY</strong><br><span>Software Engineering Degree</span>
+                            </li>
+                            <li><strong>AAT SRI LANKA</strong><br><span>Professional Qualification Completed</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="skills-grid">
+                    <div class="skill-tag">PYTHON</div>
+                    <div class="skill-tag">FINANCIAL SYSTEMS</div>
+                    <div class="skill-tag">ALGORITHMS</div>
+                    <div class="skill-tag">AWS</div>
+                </div>
+                <p class="about-bio">
+                    Dedicated Software Engineer focused on building robust financial systems. Combining technical
+                    expertise from BCU with financial acumen from AAT.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 4: Contact (The Pulse) -->
+        <section id="contact" class="hud-section center-align">
+            <div class="hud-content">
+                <span class="hud-label">SIGNAL_STRENGTH: 100%</span>
+                <h2>ESTABLISH UPLINK</h2>
+                <p>Ready to deploy AI solutions for your financial infrastructure?</p>
+                <div class="contact-actions" style="margin-top: 10px;">
+                    <a href="mailto:contact@ai-architect.com" class="hud-btn primary">TRANSMIT EMAIL</a>
+                    <a href="https://github.com/damidu-prasad" class="hud-btn secondary">VIEW GITHUB</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Main Script -->
+    <script src="js/script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
