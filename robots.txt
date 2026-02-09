@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://daminduprasad.com/sitemap.xml
