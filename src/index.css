@@ -1,5 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=Space+Grotesk:wght@300;400;700&display=swap');
 
+/* ────────────── Custom Cursor ────────────── */
+* {
+  cursor: none;
+}
+
+.custom-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-emerald);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  box-shadow: 0 0 10px var(--accent-emerald);
+}
+
+.custom-cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--accent-emerald);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+@media (max-width: 768px) {
+  * {
+    cursor: auto;
+  }
+
+  .custom-cursor-dot,
+  .custom-cursor-trail {
+    display: none;
+  }
+}
+
+
 :root {
   --bg-primary: #020808;
   --bg-secondary: #051414;
@@ -212,9 +256,10 @@ p.description {
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 2rem 1.5rem;
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .expertise-item::before {
@@ -223,16 +268,18 @@ p.description {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   background: linear-gradient(90deg, var(--accent-emerald), var(--accent-blue));
   transform: scaleX(0);
-  transition: transform 0.4s ease;
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .expertise-item:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0, 255, 204, 0.35);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), var(--glow-emerald);
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(0, 255, 204, 0.6);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 204, 0.15);
+  background: rgba(5, 20, 20, 0.85);
 }
 
 .expertise-item:hover::before {
@@ -249,10 +296,23 @@ p.description {
 
 .qual-card {
   position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.qual-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(0, 136, 255, 0.6);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 136, 255, 0.15);
 }
 
 .qual-card h4 {
   margin-bottom: 0.8rem;
+  transition: color 0.3s ease;
+}
+
+.qual-card:hover h4 {
+  color: #fff;
 }
 
 /* ────────────── Contact ────────────── */

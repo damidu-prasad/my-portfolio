@@ -1,60 +1,103 @@
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, Bot, Send, Minus, X } from 'lucide-react';
+import { Sparkles, Bot, Send, X } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Gemini API
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+
+// Define the bot's persona and knowledge base
+const SYSTEM_INSTRUCTION = `
+You are the "Advanced Olix Assistant v4.0", an elite AI agent acting as the representative for Damindu Prasad. Keep your answers concise, professional, slightly futuristic, and highly intelligent. Do not use emojis unless appropriate for a futuristic HUD theme.
+
+Knowledge Base:
+- Identity: Damindu Prasad is a High-fidelity AI Architect and Full-Stack Systems Engineer.
+- Current Role: AI Solutions Architect at Olix Holdings.
+- Key Expertise: Architecting scalable AI ecosystems, deploying large-scale LLM integrations, autonomous agents, and Fintech ecology (like the Temco Loan Management system).
+- Background: AAT (Sri Lanka) qualified, merging commercial/financial logic with high-performance automated software pipelines.
+- Tech Stack: React, Node.js, Three.js, GSAP, Google Gemini, OpenAI, Cloud Ops.
+- Contact: olixholdings@gmail.com
+
+When answering questions about Damindu or Olix Holdings, be confident and highlight his exact expertise in bridging core systems and automation. If a user asks a technical question, answer accurately as an expert engineer. If they ask to hire him, give them the contact email.
+`;
 
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'bot', content: 'Establishing secure cyber uplink... Connection verified. I am the **Advanced Olix Assistant v3.1**. How shall we proceed?' }
+        { role: 'bot', content: 'Establishing secure cyber uplink... Connection verified. I am the Advanced Olix Assistant. Ask me about Damindu Prasad, Olix Holdings, or AI Architecture.' }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
-    const scrollRef = useRef();
+    const scrollRef = useRef(null);
+
+    // Initial setup of the chat session
+    const chatSessionRef = useRef(null);
+
+    useEffect(() => {
+        try {
+            if (import.meta.env.VITE_GEMINI_API_KEY) {
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-2.5-flash",
+                    systemInstruction: SYSTEM_INSTRUCTION,
+                });
+                chatSessionRef.current = model.startChat({
+                    history: [],
+                });
+            }
+        } catch (error) {
+            console.error("Gemini initialization error:", error);
+        }
+    }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages, isTyping]);
+    }, [messages, isTyping, isOpen]);
 
-    const botKnowledge = {
-        "automation": "Damindu architects AI-driven business automation using custom LLM integrations and intelligent workflow design. At Olix Holdings, he leads the transformation of traditional bottlenecks into scalable automated systems.",
-        "aat": "As an AAT (Sri Lanka) qualified professional, Damindu possesses a deep understanding of commercial DNA and financial logic, which informs his software architectural decisions.",
-        "fintech": "He specializes in high-fidelity FinTech ecosystems, including the Temco Loan Management system. These systems are designed for high-stakes data integrity and global scalability.",
-        "olix": "Olix Holdings is the innovation hub where Damindu leads projects in Enterprise Communications (CCM) and AI-driven automation for global clients.",
-        "qualifications": "Damindu is an AAT Sri Lanka qualified professional, an AI Solutions Architect, and a Full-Stack Systems Engineer with expertise in React, Node.js, and Three.js."
-    };
+    const handleSend = async () => {
+        if (!input.trim()) return;
 
-    const handleSend = async (textInput) => {
-        const text = textInput || input;
-        if (!text.trim()) return;
-
-        setMessages(prev => [...prev, { role: 'user', content: text }]);
+        const userText = input.trim();
+        setMessages(prev => [...prev, { role: 'user', content: userText }]);
         setInput('');
         setIsTyping(true);
 
-        await new Promise(r => setTimeout(r, 800));
+        if (!import.meta.env.VITE_GEMINI_API_KEY) {
+            setTimeout(() => {
+                setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Neural link disconnected. VITE_GEMINI_API_KEY is missing from environment variables.' }]);
+                setIsTyping(false);
+            }, 1000);
+            return;
+        }
 
-        let response = "I've processed your query through the Olix Logic Engine. Would you like to deep-dive into Damindu's AI architecture or his commercial background?";
-        const lowerInput = text.toLowerCase();
+        try {
+            // Send message to Gemini chat session
+            const result = await chatSessionRef.current.sendMessage(userText);
+            const responseText = result.response.text();
 
-        if (lowerInput.includes('ai') || lowerInput.includes('automation')) response = botKnowledge.automation;
-        else if (lowerInput.includes('aat') || lowerInput.includes('commerce') || lowerInput.includes('qualifications')) response = botKnowledge.aat + " " + botKnowledge.qualifications;
-        else if (lowerInput.includes('fintech') || lowerInput.includes('loan')) response = botKnowledge.fintech;
-        else if (lowerInput.includes('olix')) response = botKnowledge.olix;
+            // Simulate typing effect for the streamed response
+            setIsTyping(false);
+            setMessages(prev => [...prev, { role: 'bot', content: '' }]);
 
-        setIsTyping(false);
+            // Typewriter effect split by characters instead of words for smoother feel
+            const chars = responseText.split('');
+            let currentText = '';
 
-        const words = response.split(' ');
-        let currentResponse = '';
-        setMessages(prev => [...prev, { role: 'bot', content: '' }]);
+            for (let i = 0; i < chars.length; i++) {
+                currentText += chars[i];
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    newMessages[newMessages.length - 1] = { role: 'bot', content: currentText };
+                    return newMessages;
+                });
+                // Faster delay for characters
+                await new Promise(r => setTimeout(r, 10));
+            }
 
-        for (let word of words) {
-            currentResponse += word + ' ';
-            setMessages(prev => {
-                const last = prev[prev.length - 1];
-                return [...prev.slice(0, -1), { ...last, content: currentResponse }];
-            });
-            await new Promise(r => setTimeout(r, 30));
+        } catch (error) {
+            console.error(error);
+            setIsTyping(false);
+            setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Uplink failure. The AI model could not process the request.' }]);
         }
     };
 
@@ -68,7 +111,7 @@ const AIAssistant = () => {
                         </div>
                         <div>
                             <div style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '1px' }}>OLIX ENGINEER AI</div>
-                            <div style={{ fontSize: '0.6rem', opacity: 0.5 }}>v3.1 CYBER CORE</div>
+                            <div style={{ fontSize: '0.65rem', opacity: 0.7, color: '#00ffcc', marginTop: '2px' }}>v4.0 ACTIVE UPLINK</div>
                         </div>
                     </div>
                     <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.5rem' }}>
@@ -79,20 +122,23 @@ const AIAssistant = () => {
                 <div className="chat-messages" ref={scrollRef}>
                     {messages.map((msg, i) => (
                         <div key={i} className={`message ${msg.role}`}>
-                            {msg.content}
+                            {/* Render basic markdown bold as strong tags for aesthetics */}
+                            {msg.content.split('**').map((part, index) =>
+                                index % 2 === 1 ? <strong key={index} style={{ color: '#00ffcc' }}>{part}</strong> : part
+                            )}
                         </div>
                     ))}
-                    {isTyping && <div className="message bot">Analyzing Logic Engine...</div>}
+                    {isTyping && <div className="message bot" style={{ opacity: 0.7, fontStyle: 'italic' }}>Analyzing Core Data...</div>}
                 </div>
 
                 <div className="chat-input-area">
                     <div className="input-wrapper">
                         <input
                             type="text"
-                            placeholder="Query the system..."
+                            placeholder="Query the advanced system..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                         />
                         <button onClick={() => handleSend()} style={{ background: 'none', border: 'none', color: '#0088ff', cursor: 'pointer' }}>
                             <Send size={18} />
