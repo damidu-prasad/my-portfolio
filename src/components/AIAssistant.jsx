@@ -1,24 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { Sparkles, Bot, Send, X } from 'lucide-react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// Initialize Gemini API
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
-
-// Define the bot's persona and knowledge base
-const SYSTEM_INSTRUCTION = `
-You are the "Advanced Olix Assistant v4.0", an elite AI agent acting as the representative for Damindu Prasad. Keep your answers concise, professional, slightly futuristic, and highly intelligent. Do not use emojis unless appropriate for a futuristic HUD theme.
-
-Knowledge Base:
-- Identity: Damindu Prasad is a High-fidelity AI Architect and Full-Stack Systems Engineer.
-- Current Role: AI Solutions Architect at Olix Holdings.
-- Key Expertise: Architecting scalable AI ecosystems, deploying large-scale LLM integrations, autonomous agents, and Fintech ecology (like the Temco Loan Management system).
-- Background: AAT (Sri Lanka) qualified, merging commercial/financial logic with high-performance automated software pipelines.
-- Tech Stack: React, Node.js, Three.js, GSAP, Google Gemini, OpenAI, Cloud Ops.
-- Contact: olixholdings@gmail.com
-
-When answering questions about Damindu or Olix Holdings, be confident and highlight his exact expertise in bridging core systems and automation. If a user asks a technical question, answer accurately as an expert engineer. If they ask to hire him, give them the contact email.
-`;
 
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,25 +9,6 @@ const AIAssistant = () => {
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef(null);
-
-    // Initial setup of the chat session
-    const chatSessionRef = useRef(null);
-
-    useEffect(() => {
-        try {
-            if (import.meta.env.VITE_GEMINI_API_KEY) {
-                const model = genAI.getGenerativeModel({
-                    model: "gemini-2.5-flash",
-                    systemInstruction: SYSTEM_INSTRUCTION,
-                });
-                chatSessionRef.current = model.startChat({
-                    history: [],
-                });
-            }
-        } catch (error) {
-            console.error("Gemini initialization error:", error);
-        }
-    }, []);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -58,24 +20,39 @@ const AIAssistant = () => {
         if (!input.trim()) return;
 
         const userText = input.trim();
+        // Capture the history BEFORE adding the new user message
+        const currentHistory = [...messages];
+
         setMessages(prev => [...prev, { role: 'user', content: userText }]);
         setInput('');
         setIsTyping(true);
 
-        if (!import.meta.env.VITE_GEMINI_API_KEY) {
-            setTimeout(() => {
-                setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Neural link disconnected. VITE_GEMINI_API_KEY is missing from environment variables.' }]);
-                setIsTyping(false);
-            }, 1000);
-            return;
-        }
-
         try {
-            // Send message to Gemini chat session
-            const result = await chatSessionRef.current.sendMessage(userText);
-            const responseText = result.response.text();
+            const response = await fetch('/.netlify/functions/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    history: currentHistory,
+                    newMessage: userText
+                })
+            });
 
-            // Simulate typing effect for the streamed response
+            if (!response.ok) {
+                throw new Error(`Server returned status ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (result.error) {
+                // Return gracefully if server has custom error string
+                throw new Error(result.error);
+            }
+
+            const responseText = result.reply;
+
+            // Simulate typing effect for the response
             setIsTyping(false);
             setMessages(prev => [...prev, { role: 'bot', content: '' }]);
 
@@ -95,9 +72,9 @@ const AIAssistant = () => {
             }
 
         } catch (error) {
-            console.error(error);
+            console.error("Chat Server Error:", error);
             setIsTyping(false);
-            setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Uplink failure. The AI model could not process the request.' }]);
+            setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Uplink failure. The AI server could not process the request.' }]);
         }
     };
 
