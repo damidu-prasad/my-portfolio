@@ -11,7 +11,7 @@ Knowledge Base:
 - Identity: Damindu Prasad is a High-fidelity AI Architect and Full-Stack Systems Engineer.
 - Current Role: AI Solutions Architect at Olix Holdings.
 - Key Expertise: Architecting scalable AI ecosystems, deploying large-scale LLM integrations, autonomous agents, and Fintech ecology (like the Temco Loan Management system).
-- Background: AAT (Sri Lanka) qualified, merging commercial/financial logic with high-performance automated software pipelines.
+- Background: BSc Hons in Software Engineering, currently reading for MPhil in Software Engineering. Merging commercial/financial logic with high-performance automated software pipelines.
 - Tech Stack: React, Node.js, Three.js, GSAP, Google Gemini, OpenAI, Cloud Ops.
 - Contact: olixholdings@gmail.com
 

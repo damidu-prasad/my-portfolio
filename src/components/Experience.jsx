@@ -110,101 +110,107 @@ const S = {
     desc: { fontSize: "clamp(0.9rem, 2vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "540px" },
     descCenter: { fontSize: "clamp(0.9rem, 2vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "540px", margin: "0 auto" },
     grid3: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem", marginTop: "0.5rem" },
-    card: { background: "rgba(5, 20, 20, 0.75)", backdropFilter: "blur(12px)", border: "1px solid rgba(0,255,204,0.18)", borderRadius: "16px", padding: "1.5rem 1.8rem" },
-    email: { display: "inline-block", fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(1.1rem, 3.5vw, 1.8rem)", fontWeight: 700, color: "#00ffcc", textDecoration: "none", marginTop: "1rem" },
-    footer: { fontSize: "0.65rem", letterSpacing: "0.4rem", color: "#0088ff", opacity: 0.6, textTransform: "uppercase", marginTop: "1.2rem" },
+    scrollFlex: { display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", gap: "1rem", marginTop: "0.5rem", paddingBottom: "1.5rem", WebkitOverflowScrolling: "touch" },
+    card: { background: "rgba(5, 20, 20, 0.75)", backdropFilter: "blur(12px)", border: "1px solid rgba(0,255,204,0.18)", borderRadius: "16px", padding: "1.5rem 1.8rem", minWidth: "260px", scrollSnapAlign: "start", flexShrink: 0 },
+    email: { display: "inline-block", fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(1.1rem, 3.5vw, 1.8rem)", fontWeight: 700, color: "#00ffcc", textDecoration: "none", margin: "1rem auto 0" },
+    footer: { fontSize: "0.65rem", letterSpacing: "0.4rem", color: "#0088ff", opacity: 0.6, textTransform: "uppercase", marginTop: "1.2rem", textAlign: "center", width: "100%" },
 };
 
 // ── HTML overlay ───────────────────────────────────────────
-const HtmlContent = () => (
-    <Scroll html>
-        <div style={{ width: "100vw" }}>
+const HtmlContent = () => {
+    const { viewport } = useThree();
+    const isMobile = viewport.width < 8;
 
-            {/* Hero */}
-            <div style={S.section}>
-                <div style={S.wrapper}>
-                    <div style={S.tag}>establishing neural uplink</div>
-                    <h1 style={S.h1}>DAMINDU<br /><span style={S.span}>PRASAD</span></h1>
-                    <p style={S.desc}>
-                        High-fidelity AI Architect.<br />
-                        Architecting the future of immersive enterprise automation.
-                    </p>
+    return (
+        <Scroll html>
+            <div style={{ width: "100vw" }}>
+
+                {/* Hero */}
+                <div style={S.section}>
+                    <div style={S.wrapper}>
+                        <div style={S.tag}>establishing neural uplink</div>
+                        <h1 style={S.h1}>DAMINDU<br /><span style={S.span}>PRASAD</span></h1>
+                        <p style={S.desc}>
+                            High-fidelity AI Architect.<br />
+                            Architecting the future of immersive enterprise automation.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            {/* Expertise */}
-            <div style={S.section}>
-                <div style={S.wrapper}>
-                    <div style={S.tag}>system protocols</div>
-                    <h2 style={S.h2}>EXPERTISE</h2>
-                    <div style={S.grid3}>
-                        <div style={S.card}>
-                            <h3 style={S.h3}>AI AUTOMATION</h3>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>Deploying large-scale LLM ecosystems and autonomous agents.</p>
-                        </div>
-                        <div style={S.card}>
-                            <h3 style={S.h3}>FINTECH ECOLOGY</h3>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>Architecting scalable financial logic and secure pipelines.</p>
-                        </div>
-                        <div style={S.card}>
-                            <h3 style={S.h3}>MODERN STACK</h3>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>High-performance engineering with React, Three.js, and Cloud Ops.</p>
+                {/* Expertise */}
+                <div style={S.section}>
+                    <div style={S.wrapper}>
+                        <div style={S.tag}>system protocols</div>
+                        <h2 style={S.h2}>EXPERTISE</h2>
+                        <div style={isMobile ? S.scrollFlex : S.grid3} className={isMobile ? "horizontal-scroll" : ""}>
+                            <div style={S.card}>
+                                <h3 style={S.h3}>AI AUTOMATION</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Deploying large-scale LLM ecosystems and autonomous agents.</p>
+                            </div>
+                            <div style={S.card}>
+                                <h3 style={S.h3}>FINTECH ECOLOGY</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Architecting scalable financial logic and secure pipelines.</p>
+                            </div>
+                            <div style={S.card}>
+                                <h3 style={S.h3}>MODERN STACK</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>High-performance engineering with React, Three.js, and Cloud Ops.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Qualifications */}
-            <div style={S.section}>
-                <div style={S.wrapper}>
-                    <div style={S.tag}>engine dna</div>
-                    <h2 style={S.h2}>QUALIFICATIONS</h2>
-                    <div style={S.grid3}>
-                        <div style={S.card}>
-                            <h4 style={S.h4}>AI SOLUTIONS ARCHITECT</h4>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>Leading innovation @ Olix Holdings. Custom LLM integration.</p>
-                        </div>
-                        <div style={S.card}>
-                            <h4 style={S.h4}>SYSTEMS ENGINEER</h4>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>Deep-stack automation &amp; high-integrity software design.</p>
-                        </div>
-                        <div style={S.card}>
-                            <h4 style={S.h4}>AAT (SRI LANKA)</h4>
-                            <p style={{ ...S.desc, maxWidth: "100%" }}>Precision Commerce DNA &amp; Financial Systems logic.</p>
+                {/* Qualifications */}
+                <div style={S.section}>
+                    <div style={S.wrapper}>
+                        <div style={S.tag}>engine dna</div>
+                        <h2 style={S.h2}>QUALIFICATIONS</h2>
+                        <div style={isMobile ? S.scrollFlex : S.grid3} className={isMobile ? "horizontal-scroll" : ""}>
+                            <div style={S.card}>
+                                <h4 style={S.h4}>AI SOLUTIONS ARCHITECT</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Leading innovation @ Olix Holdings. Custom LLM integration.</p>
+                            </div>
+                            <div style={S.card}>
+                                <h4 style={S.h4}>SOFTWARE ENGINEER</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Deep-stack automation &amp; high-integrity software design.</p>
+                            </div>
+                            <div style={S.card}>
+                                <h4 style={S.h4}>BSc HONS & MPHIL</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>BSc Hons Software Engineering. Reading for MPhil.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Bio */}
-            <div style={S.sectionCenter}>
-                <div style={S.wrapperCenter}>
-                    <div style={{ ...S.tag, justifyContent: "center" }}>engineering dna</div>
-                    <h2 style={S.h2}>BRIDGING CORE SYSTEMS</h2>
-                    <p style={S.descCenter}>
-                        Merging high-fidelity commercial logic with autonomous software.
-                        Specialized in translating enterprise financial architecture into
-                        high-performance automated pipelines.
-                    </p>
+                {/* Bio */}
+                <div style={S.sectionCenter}>
+                    <div style={S.wrapperCenter}>
+                        <div style={{ ...S.tag, justifyContent: "center" }}>engineering dna</div>
+                        <h2 style={S.h2}>BRIDGING CORE SYSTEMS</h2>
+                        <p style={S.descCenter}>
+                            Merging high-fidelity commercial logic with autonomous software.
+                            Specialized in translating enterprise financial architecture into
+                            high-performance automated pipelines.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            {/* Contact */}
-            <div style={S.sectionCenter}>
-                <div style={S.wrapperCenter}>
-                    <div style={{ ...S.tag, justifyContent: "center" }}>contact uplink</div>
-                    <h2 style={S.h2}>UPLINK</h2>
-                    <p style={S.descCenter}>Ready for elite automation commands.</p>
-                    <a href="mailto:olixholdings@gmail.com" style={S.email}>
-                        olixholdings@gmail.com
-                    </a>
-                    <div style={S.footer}>ESTABLISHING CONNECTION...</div>
+                {/* Contact */}
+                <div style={S.sectionCenter}>
+                    <div style={S.wrapperCenter}>
+                        <div style={{ ...S.tag, justifyContent: "center" }}>contact uplink</div>
+                        <h2 style={S.h2}>UPLINK</h2>
+                        <p style={S.descCenter}>Ready for elite automation commands.</p>
+                        <a href="mailto:olixholdings@gmail.com" style={S.email}>
+                            olixholdings@gmail.com
+                        </a>
+                        <div style={S.footer}>ESTABLISHING CONNECTION...</div>
+                    </div>
                 </div>
-            </div>
 
-        </div>
-    </Scroll>
-);
+            </div>
+        </Scroll>
+    );
+};
 
 // ── Main exported component ────────────────────────────────
 export const Experience = () => (

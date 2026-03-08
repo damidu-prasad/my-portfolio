@@ -572,11 +572,6 @@ p.description {
     justify-content: center;
   }
 
-  .expertise-grid,
-  .qual-grid {
-    grid-template-columns: 1fr;
-  }
-
   .contact-wrapper {
     align-items: center;
   }
@@ -584,10 +579,11 @@ p.description {
   .chatbot-container {
     inset: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
+    /* Use dynamic viewport height for mobile keyboards */
     border-radius: 0;
-    bottom: auto;
-    left: auto;
+    bottom: 0;
+    left: 0;
     z-index: 20000;
   }
 
