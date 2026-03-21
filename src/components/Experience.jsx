@@ -131,8 +131,8 @@ const HtmlContent = () => {
                         <div style={S.tag}>establishing neural uplink</div>
                         <h1 style={S.h1}>DAMINDU<br /><span style={S.span}>PRASAD</span></h1>
                         <p style={S.desc}>
-                            High-fidelity AI Architect.<br />
-                            Architecting the future of immersive enterprise automation.
+                            FinTech Software Engineer | AI Developer | Tech Content Creator<br />
+                            Bridging cutting-edge AI technology and practical business solutions.
                         </p>
                     </div>
                 </div>
@@ -144,16 +144,16 @@ const HtmlContent = () => {
                         <h2 style={S.h2}>EXPERTISE</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
                             <div style={S.card}>
-                                <h3 style={S.h3}>AI AUTOMATION</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Deploying large-scale LLM ecosystems and autonomous agents.</p>
+                                <h3 style={S.h3}>AI & AUTOMATION</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Developing AI-driven workflows, LLM integrations, and custom automations.</p>
                             </div>
                             <div style={S.card}>
-                                <h3 style={S.h3}>FINTECH ECOLOGY</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Architecting scalable financial logic and secure pipelines.</p>
+                                <h3 style={S.h3}>CORE TECH STACK</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>High-performance React.js, Next.js, Node.js, and Python systems.</p>
                             </div>
                             <div style={S.card}>
-                                <h3 style={S.h3}>MODERN STACK</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>High-performance engineering with React, Three.js, and Cloud Ops.</p>
+                                <h3 style={S.h3}>FINTECH SYSTEMS</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Building scalable financial suites, dashboards, and role-based access controls.</p>
                             </div>
                         </div>
                     </div>
@@ -166,16 +166,16 @@ const HtmlContent = () => {
                         <h2 style={S.h2}>QUALIFICATIONS</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
                             <div style={S.card}>
-                                <h4 style={S.h4}>AI SOLUTIONS ARCHITECT</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Leading innovation @ Olix Holdings. Custom LLM integration.</p>
+                                <h4 style={S.h4}>FOUNDER @ OLIX HOLDINGS</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Leading an AI Automation Agency providing AI-driven efficiency for modern businesses.</p>
                             </div>
                             <div style={S.card}>
-                                <h4 style={S.h4}>SOFTWARE ENGINEER</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Deep-stack automation &amp; high-integrity software design.</p>
+                                <h4 style={S.h4}>FINTECH SOFTWARE ENGINEER</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Specializing in AI automation, advanced dashboard building, and web architectures.</p>
                             </div>
                             <div style={S.card}>
-                                <h4 style={S.h4}>BSc HONS & MPHIL</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>BSc Hons Software Engineering. Reading for MPhil.</p>
+                                <h4 style={S.h4}>EDUCATION & CONTENT</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>BSc (Hons) Software Engineering (Birmingham City Univ), MPhil Candidate. Managing "AI Hub". AAT Level 2.</p>
                             </div>
                         </div>
                     </div>
@@ -187,9 +187,9 @@ const HtmlContent = () => {
                         <div style={{ ...S.tag, justifyContent: "center" }}>engineering dna</div>
                         <h2 style={S.h2}>BRIDGING CORE SYSTEMS</h2>
                         <p style={S.descCenter}>
-                            Merging high-fidelity commercial logic with autonomous software.
-                            Specialized in translating enterprise financial architecture into
-                            high-performance automated pipelines.
+                            I am a dedicated Software Engineer based in Maharagama, Sri Lanka.
+                            Specializing in AI automation and high-performance web systems,
+                            I collaborate to develop custom dashboards, automated workflows, and robust applications.
                         </p>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI("AIzaSyD7AvvFZGGyD6m_-Rfk_VWTVPqTKySImS8");
+// Loading from environment variables (e.g. node --env-file=.env test-gemini.js)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY);
 
 async function run() {
     try {
