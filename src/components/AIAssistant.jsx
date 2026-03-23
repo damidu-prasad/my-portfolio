@@ -1,10 +1,65 @@
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, Bot, Send, X } from 'lucide-react';
+import { Sparkles, Bot, Send, X, TerminalSquare } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, MeshDistortMaterial, Environment } from '@react-three/drei';
+
+// ── 3D Mini Robot Avatar ──────────────────────────────────
+const MiniRobot = ({ isTyping }) => {
+    const eyeRef = useRef();
+    const ringRef = useRef();
+    
+    useFrame((state, delta) => {
+        if (ringRef.current) {
+            ringRef.current.rotation.x += delta * 2;
+            ringRef.current.rotation.y += delta * 3;
+        }
+        if (eyeRef.current) {
+            // Pulse the eye when typing
+            if (isTyping) {
+                eyeRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 15) * 0.1);
+                eyeRef.current.material.emissiveIntensity = 2 + Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 2;
+            } else {
+                eyeRef.current.scale.setScalar(1);
+                eyeRef.current.material.emissiveIntensity = 2;
+            }
+        }
+    });
+
+    return (
+        <Float speed={5} rotationIntensity={0.5} floatIntensity={2}>
+            {/* Core Body */}
+            <mesh>
+                <sphereGeometry args={[1.2, 32, 32]} />
+                <meshStandardMaterial color="#051414" metalness={0.8} roughness={0.2} wireframe={true} />
+            </mesh>
+            
+            {/* Inner Glitched Core */}
+            <mesh>
+                <icosahedronGeometry args={[0.8, 1]} />
+                <MeshDistortMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={isTyping ? 1.5 : 0.5} distort={isTyping ? 0.8 : 0.2} speed={isTyping ? 10 : 2} />
+            </mesh>
+
+            {/* Glowing Eye */}
+            <mesh ref={eyeRef} position={[0, 0, 1.1]}>
+                <sphereGeometry args={[0.3, 16, 16]} />
+                <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={2} />
+            </mesh>
+
+            {/* Orbiting Ring */}
+            <mesh ref={ringRef}>
+                <torusGeometry args={[1.8, 0.05, 16, 100]} />
+                <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={1.5} />
+            </mesh>
+            <ambientLight intensity={1} color="#00ff00" />
+            <pointLight position={[0, 0, 2]} intensity={5} color="#00ff00" />
+        </Float>
+    );
+};
 
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'bot', content: 'Establishing secure cyber uplink... Connection verified. I am the Advanced Olix Assistant. Ask me about Damindu Prasad, Olix Holdings, or AI Architecture.' }
+        { role: 'bot', content: '> ESTABLISHING SECURE CYBER UPLINK...\n> CONNECTION VERIFIED.\n> I AM THE ADVANCED OLIX ASSISTANT.\n> QUERY DAMINDU PRASAD, OLIX HOLDINGS, OR AI ARCHITECTURE PROTOCOLS.' }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -20,10 +75,9 @@ const AIAssistant = () => {
         if (!input.trim()) return;
 
         const userText = input.trim();
-        // Capture the history BEFORE adding the new user message
         const currentHistory = [...messages];
 
-        setMessages(prev => [...prev, { role: 'user', content: userText }]);
+        setMessages(prev => [...prev, { role: 'user', content: `> user: ${userText}` }]);
         setInput('');
         setIsTyping(true);
 
@@ -46,17 +100,15 @@ const AIAssistant = () => {
             const result = await response.json();
 
             if (result.error) {
-                // Return gracefully if server has custom error string
                 throw new Error(result.error);
             }
 
-            const responseText = result.reply;
+            const responseText = `> sys: ${result.reply}`;
 
-            // Simulate typing effect for the response
             setIsTyping(false);
             setMessages(prev => [...prev, { role: 'bot', content: '' }]);
 
-            // Typewriter effect split by characters instead of words for smoother feel
+            // Matrix typing effect
             const chars = responseText.split('');
             let currentText = '';
 
@@ -67,57 +119,71 @@ const AIAssistant = () => {
                     newMessages[newMessages.length - 1] = { role: 'bot', content: currentText };
                     return newMessages;
                 });
-                // Faster delay for characters
-                await new Promise(r => setTimeout(r, 10));
+                await new Promise(r => setTimeout(r, 15 + Math.random() * 20)); // Hacker typing speed variation
             }
 
         } catch (error) {
             console.error("Chat Server Error:", error);
             setIsTyping(false);
-            setMessages(prev => [...prev, { role: 'bot', content: 'ERROR: Uplink failure. The AI server could not process the request.' }]);
+            setMessages(prev => [...prev, { role: 'bot', content: '> ERROR: UPLINK FAILURE. THE AI SERVER COULD NOT PROCESS THE REQUEST.' }]);
         }
     };
 
     return (
         <>
-            <div className={`chatbot-container ${isOpen ? 'active' : ''}`}>
-                <div className="chatbot-header">
+            <div className={`chatbot-container ${isOpen ? 'active' : ''}`} style={{ fontFamily: 'Fira Code, monospace', border: '1px solid #00ff00', background: 'rgba(0,10,0,0.95)', boxShadow: '0 0 20px rgba(0,255,0,0.2)' }}>
+                <div className="chatbot-header" style={{ background: '#002200', borderBottom: '1px solid #00ff00', padding: '10px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{ background: 'rgba(0, 136, 255, 0.2)', padding: '0.5rem', borderRadius: '50%' }}>
-                            <Sparkles size={20} color="#0088ff" />
+                        {/* Render the 3D bot in the header instead of an icon */}
+                        <div style={{ width: '40px', height: '40px' }}>
+                            <Canvas camera={{ position: [0, 0, 5] }}>
+                                <MiniRobot isTyping={isTyping} />
+                            </Canvas>
                         </div>
                         <div>
-                            <div style={{ fontWeight: 800, fontSize: '0.8rem', letterSpacing: '1px' }}>OLIX ENGINEER AI</div>
-                            <div style={{ fontSize: '0.65rem', opacity: 0.7, color: '#00ffcc', marginTop: '2px' }}>v4.0 ACTIVE UPLINK</div>
+                            <div style={{ fontWeight: 800, fontSize: '0.9rem', letterSpacing: '2px', color: '#00ff00' }}>OLIX_ENGINEER_AI</div>
+                            <div style={{ fontSize: '0.65rem', color: '#00ffff', marginTop: '2px', letterSpacing: '1px' }}>V4.0 // ACTIVE UPLINK</div>
                         </div>
                     </div>
-                    <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '0.5rem' }}>
-                        <X size={24} opacity={0.6} />
+                    <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#00ff00', cursor: 'pointer', padding: '0.5rem' }}>
+                        <X size={24} />
                     </button>
                 </div>
 
-                <div className="chat-messages" ref={scrollRef}>
+                <div className="chat-messages" ref={scrollRef} style={{ background: '#000000', color: '#00ff00' }}>
                     {messages.map((msg, i) => (
-                        <div key={i} className={`message ${msg.role}`}>
-                            {/* Render basic markdown bold as strong tags for aesthetics */}
+                        <div key={i} className={`message ${msg.role}`} style={{ 
+                            background: 'transparent', 
+                            border: 'none', 
+                            color: msg.role === 'user' ? '#00ffff' : '#00ff00',
+                            fontFamily: 'Fira Code, monospace',
+                            whiteSpace: 'pre-wrap',
+                            textShadow: msg.role === 'user' ? '0 0 5px #00ffff' : '0 0 5px #00ff00',
+                            textAlign: 'left',
+                            alignSelf: 'flex-start',
+                            maxWidth: '100%'
+                        }}>
+                            {/* Simple markdown bolding support */}
                             {msg.content.split('**').map((part, index) =>
-                                index % 2 === 1 ? <strong key={index} style={{ color: '#00ffcc' }}>{part}</strong> : part
+                                index % 2 === 1 ? <strong key={index} style={{ color: '#fff' }}>{part}</strong> : part
                             )}
                         </div>
                     ))}
-                    {isTyping && <div className="message bot" style={{ opacity: 0.7, fontStyle: 'italic' }}>Analyzing Core Data...</div>}
+                    {isTyping && <div className="message bot" style={{ opacity: 0.7, fontStyle: 'italic', color: '#00ff00' }}>> Analyzing Core Data...</div>}
                 </div>
 
-                <div className="chat-input-area">
-                    <div className="input-wrapper">
+                <div className="chat-input-area" style={{ background: '#001100', borderTop: '1px solid #00ff00' }}>
+                    <div className="input-wrapper" style={{ border: '1px solid #00ff00', background: '#000', borderRadius: '4px' }}>
+                        <TerminalSquare size={16} color="#00ff00" style={{ marginRight: '8px' }} />
                         <input
                             type="text"
-                            placeholder="Query the advanced system..."
+                            placeholder="Execute command..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                            style={{ color: '#00ff00', fontFamily: 'Fira Code, monospace' }}
                         />
-                        <button onClick={() => handleSend()} style={{ background: 'none', border: 'none', color: '#0088ff', cursor: 'pointer' }}>
+                        <button onClick={() => handleSend()} style={{ background: 'none', border: 'none', color: '#00ff00', cursor: 'pointer' }}>
                             <Send size={18} />
                         </button>
                     </div>
@@ -127,10 +193,24 @@ const AIAssistant = () => {
             <button
                 className={`chatbot-fab ${isOpen ? 'hidden' : ''}`}
                 onClick={() => setIsOpen(true)}
-                style={{ display: isOpen ? 'none' : 'flex' }}
+                style={{ 
+                    display: isOpen ? 'none' : 'flex',
+                    background: '#002200',
+                    border: '1px solid #00ff00',
+                    color: '#00ff00',
+                    boxShadow: '0 0 15px rgba(0,255,0,0.5)',
+                    borderRadius: '5px',
+                    width: '180px',
+                    height: '50px',
+                    padding: '0 10px'
+                }}
             >
-                <Bot size={20} />
-                <span>AI ASSISTANT</span>
+                <div style={{ width: '40px', height: '40px', marginLeft: '-5px' }}>
+                    <Canvas camera={{ position: [0, 0, 5] }}>
+                        <MiniRobot isTyping={false} />
+                    </Canvas>
+                </div>
+                <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '0.8rem', letterSpacing: '1px' }}>AI_ASSISTANT</span>
             </button>
         </>
     );

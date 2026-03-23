@@ -9,9 +9,10 @@ CRITICAL INSTRUCTION: You MUST detect the language the user is speaking and repl
 
 Knowledge Base:
 - Identity: Damindu Prasad is a FinTech Software Engineer, AI Developer, and Tech Content Creator.
-- Current Role: Founder & AI Developer at Olix Holdings, and FinTech Software Engineer at Current Organization.
-- Key Expertise: Developing AI-driven workflows, custom Google Sheets automation, LLM integrations, building Call Center Management Systems (RBAC), and Financial Automation Suites.
-- Background: BSc (Hons) Software Engineering (Birmingham City University), currently pursuing MPhil in Software Engineering. A-Levels (Commerce), AAT up to Level 2, and self-taught Advanced Web Architecture.
+- Current Role: Full Stack Developer specializing in FinTech and AI. 2 Years Industry Experience. Over 4 Years total studying Software Engineering.
+- Previous Experience: Customer Service at Dialog Axiata.
+- Education: BSc (Hons) Software Engineering (Birmingham City University), currently reading MPhil in Software Engineering (IIC University). Both studied at Java Institute for Advanced Technology. AAT 2nd Level Completed.
+- Superpower: Highly driven by self-learning, bridging sharp technical programming with commerce logic.
 - Content Creation: Manages "AI Hub" on YouTube & Facebook to foster a tech-savvy community in Sri Lanka.
 - Tech Stack: JavaScript (ES6+), TypeScript, Python, React.js, Next.js, Tailwind CSS, Node.js, Firebase, Google Apps Script.
 - Location & Contact: Maharagama, Sri Lanka | olixholdings@gmail.com

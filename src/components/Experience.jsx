@@ -1,82 +1,113 @@
 import {
     Float,
-    MeshDistortMaterial,
     Scroll,
     ScrollControls,
     useScroll,
-    Stars,
     Grid,
+    Line,
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import * as THREE from "three";
-import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
+import { Bloom, EffectComposer, Noise, Vignette, Glitch } from "@react-three/postprocessing";
+import { GlitchMode } from "postprocessing";
 
-// ── Scroll-driven 3D scene ─────────────────────────────────
-const SceneContent = () => {
+// ── Hacker Data Particles ─────────────────────────────────
+const DataStream = () => {
+    const count = 300;
     const meshRef = useRef();
-    const groupRef = useRef();
-    const scroll = useScroll();
-    const { viewport } = useThree();
-
-    const isMobile = viewport.width < 8;
-    const baseScale = isMobile ? viewport.width * 0.18 : 1.5;
+    
+    // Generate random positions
+    const particles = useMemo(() => {
+        const temp = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            temp[i * 3] = (Math.random() - 0.5) * 40; // x
+            temp[i * 3 + 1] = (Math.random() - 0.5) * 40; // y
+            temp[i * 3 + 2] = (Math.random() - 0.5) * 100; // z (deep tunnel)
+        }
+        return temp;
+    }, [count]);
 
     useFrame((state, delta) => {
-        const offset = scroll.offset; // 0 → 1
-
-        // Camera path
-        const startZ = isMobile ? 22 : 12;
-        const endZ = isMobile ? 14 : 5;
-        state.camera.position.z = THREE.MathUtils.lerp(startZ, endZ, offset);
-        state.camera.position.y = THREE.MathUtils.lerp(2, 0.5, offset);
-        state.camera.rotation.x = THREE.MathUtils.lerp(-0.2, 0, offset);
-
-        // Core left/right drift
-        if (groupRef.current) {
-            groupRef.current.rotation.y += delta * 0.45;
-            if (!isMobile) {
-                let xPos = 0;
-                if (offset < 0.4) xPos = THREE.MathUtils.lerp(0, 3.5, offset / 0.4);
-                else if (offset < 0.7) xPos = THREE.MathUtils.lerp(3.5, -3.5, (offset - 0.4) / 0.3);
-                else xPos = THREE.MathUtils.lerp(-3.5, 0, (offset - 0.7) / 0.3);
-                groupRef.current.position.x = xPos;
-            } else {
-                groupRef.current.position.x = 0;
-            }
-            groupRef.current.position.y = isMobile ? -3 : 0;
-        }
-
-        // Distortion morphing
-        if (meshRef.current) {
-            meshRef.current.distort = THREE.MathUtils.lerp(0.25, 0.65, Math.abs(Math.sin(offset * Math.PI)));
+        if (!meshRef.current) return;
+        meshRef.current.position.z += delta * 15; // Move towards camera
+        if (meshRef.current.position.z > 50) {
+            meshRef.current.position.z = -50;
         }
     });
 
     return (
-        <group ref={groupRef}>
-            <Float speed={2.5} rotationIntensity={1} floatIntensity={1.5}>
-                <mesh castShadow>
-                    <icosahedronGeometry args={[baseScale, 20]} />
-                    <MeshDistortMaterial
-                        ref={meshRef}
-                        color="#0088ff"
-                        emissive="#0044ff"
-                        emissiveIntensity={2.5}
-                        metalness={1}
-                        roughness={0.05}
-                        speed={2}
-                        distort={0.35}
-                        radius={1}
-                    />
-                </mesh>
-            </Float>
-            <Stars radius={5} depth={50} count={1200} factor={4} saturation={0} fade speed={1} />
+        <points ref={meshRef}>
+            <bufferGeometry>
+                <bufferAttribute
+                    attach="attributes-position"
+                    count={count}
+                    array={particles}
+                    itemSize={3}
+                />
+            </bufferGeometry>
+            <pointsMaterial size={0.15} color="#00ff00" transparent opacity={0.6} sizeAttenuation />
+        </points>
+    );
+};
+
+// ── Hovering Wireframe Cube Matrix ──────────────────────────
+const CyberCubes = () => {
+    const groupRef = useRef();
+    useFrame((state, delta) => {
+        if(groupRef.current){
+            groupRef.current.rotation.z -= delta * 0.1;
+        }
+    });
+
+    return (
+        <group ref={groupRef} position={[0, 0, -30]}>
+            {Array.from({ length: 40 }).map((_, i) => (
+                <Float key={i} speed={2} rotationIntensity={2} floatIntensity={2} position={[
+                    (Math.random() - 0.5) * 30,
+                    (Math.random() - 0.5) * 30,
+                    -Math.random() * 80
+                ]}>
+                    <mesh>
+                        <boxGeometry args={[Math.random()*2+1, Math.random()*2+1, Math.random()*2+1]} />
+                        <meshBasicMaterial color="#00ff00" wireframe transparent opacity={0.15} />
+                    </mesh>
+                </Float>
+            ))}
         </group>
     );
 };
 
-// ── Shared inline styles (guarantee render inside ScrollControls) ──
+// ── Scroll-driven 3D scene ─────────────────────────────────
+const SceneContent = () => {
+    const scroll = useScroll();
+    const { viewport } = useThree();
+    const isMobile = viewport.width < 8;
+
+    useFrame((state, delta) => {
+        const offset = scroll.offset; // 0 → 1
+
+        // Extreme perspective shift as we scroll down
+        const startZ = 15;
+        const endZ = -40; // Move deep into the grid
+        
+        state.camera.position.z = THREE.MathUtils.lerp(startZ, endZ, offset);
+        state.camera.position.y = THREE.MathUtils.lerp(2, -1, offset);
+        state.camera.rotation.x = THREE.MathUtils.lerp(-0.1, 0.1, offset);
+        
+        // Slight glitch rocking
+        state.camera.rotation.z = Math.sin(state.clock.elapsedTime * 2) * 0.02 * offset;
+    });
+
+    return (
+        <group>
+            <DataStream />
+            <CyberCubes />
+        </group>
+    );
+};
+
+// ── Shared Hacker Styles ──────────────────────────────────
 const S = {
     section: {
         minHeight: "100vh",
@@ -86,7 +117,7 @@ const S = {
         justifyContent: "center",
         padding: "0 10%",
         position: "relative",
-        color: "#fff",
+        color: "#00ff00",
     },
     sectionCenter: {
         minHeight: "100vh",
@@ -97,23 +128,22 @@ const S = {
         alignItems: "center",
         textAlign: "center",
         padding: "0 10%",
-        color: "#fff",
+        color: "#00ff00",
     },
     wrapper: { maxWidth: "1100px", width: "100%", margin: "0 auto" },
     wrapperCenter: { maxWidth: "1100px", width: "100%", margin: "0 auto", textAlign: "center" },
-    tag: { fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.4rem", color: "#00ffcc", textTransform: "uppercase", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" },
-    h1: { fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(3rem, 13vw, 9rem)", lineHeight: 0.85, fontWeight: 900, textTransform: "uppercase", marginBottom: "1.5rem" },
-    span: { background: "linear-gradient(90deg, #00ffcc, #0088ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" },
-    h2: { fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(2rem, 7vw, 4.5rem)", fontWeight: 700, marginBottom: "1.5rem", color: "#0088ff" },
-    h3: { fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(0.9rem, 2.5vw, 1.2rem)", fontWeight: 700, color: "#00ffcc", marginBottom: "0.5rem", letterSpacing: "0.05em" },
-    h4: { fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(0.85rem, 2vw, 1rem)", fontWeight: 700, color: "#00ffcc", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.6rem" },
-    desc: { fontSize: "clamp(0.9rem, 2vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "540px" },
-    descCenter: { fontSize: "clamp(0.9rem, 2vw, 1.05rem)", color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: "540px", margin: "0 auto" },
-    grid3: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem", marginTop: "0.5rem" },
+    tag: { fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.2rem", color: "#00ffff", textTransform: "uppercase", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" },
+    h1: { fontSize: "clamp(3rem, 13vw, 9rem)", lineHeight: 0.85, fontWeight: 900, textTransform: "uppercase", marginBottom: "1.5rem", color: "#00ff00", textShadow: "0 0 10px #00ff00" },
+    h2: { fontSize: "clamp(2rem, 7vw, 4.5rem)", fontWeight: 700, marginBottom: "1.5rem", color: "#e0ffe0", textShadow: "0 0 8px rgba(0,255,0,0.5)" },
+    h3: { fontSize: "clamp(1rem, 2.5vw, 1.3rem)", fontWeight: 700, color: "#00ffff", marginBottom: "0.5rem", letterSpacing: "0.05em", textShadow: "0 0 5px #00ffff" },
+    h4: { fontSize: "clamp(0.9rem, 2vw, 1.1rem)", fontWeight: 700, color: "#00ff00", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.6rem" },
+    desc: { fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(0, 255, 0, 0.7)", lineHeight: 1.7, maxWidth: "540px" },
+    descCenter: { fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(0, 255, 0, 0.7)", lineHeight: 1.7, maxWidth: "540px", margin: "0 auto" },
+    grid3: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginTop: "1rem" },
     mobileStack: { display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1rem", paddingBottom: "2rem" },
-    card: { background: "rgba(5, 20, 20, 0.75)", backdropFilter: "blur(12px)", border: "1px solid rgba(0,255,204,0.18)", borderRadius: "16px", padding: "1.5rem 1.8rem" },
-    email: { display: "inline-block", fontFamily: "'Space Grotesk', sans-serif", fontSize: "clamp(1.1rem, 3.5vw, 1.8rem)", fontWeight: 700, color: "#00ffcc", textDecoration: "none", margin: "1rem auto 0" },
-    footer: { fontSize: "0.65rem", letterSpacing: "0.4rem", color: "#0088ff", opacity: 0.6, textTransform: "uppercase", marginTop: "1.2rem", textAlign: "center", width: "100%" },
+    card: { background: "rgba(0, 15, 0, 0.8)", border: "1px solid #00ff00", borderRadius: "4px", padding: "1.5rem 1.8rem", boxShadow: "0 0 15px rgba(0, 255, 0, 0.1) inset" },
+    email: { display: "inline-block", fontSize: "clamp(1.1rem, 3.5vw, 1.8rem)", fontWeight: 700, color: "#00ff00", textDecoration: "none", margin: "1rem auto 0", borderBottom: "2px solid #00ff00", paddingBottom: "4px" },
+    footer: { fontSize: "0.8rem", letterSpacing: "0.2rem", color: "#00ffff", opacity: 0.8, textTransform: "uppercase", marginTop: "1.5rem", textAlign: "center", width: "100%" },
 };
 
 // ── HTML overlay ───────────────────────────────────────────
@@ -123,16 +153,16 @@ const HtmlContent = () => {
 
     return (
         <Scroll html>
-            <div style={{ width: "100vw" }}>
+            <div style={{ width: "100vw", cursor: "crosshair" }}>
 
                 {/* Hero */}
                 <div style={S.section}>
                     <div style={S.wrapper}>
-                        <div style={S.tag}>establishing neural uplink</div>
-                        <h1 style={S.h1}>DAMINDU<br /><span style={S.span}>PRASAD</span></h1>
+                        <div style={S.tag}>&gt; INIT UPLINK_</div>
+                        <h1 style={S.h1} className="glitch" data-text="DAMINDU PRASAD">DAMINDU PRASAD</h1>
                         <p style={S.desc}>
-                            FinTech Software Engineer | AI Developer | Tech Content Creator<br />
-                            Bridging cutting-edge AI technology and practical business solutions.
+                            $ ROLE: Full Stack Developer | FinTech & AI Specialist<br />
+                            $ STATUS: 2 Years Industry Exp. 4 Years SE Development.
                         </p>
                     </div>
                 </div>
@@ -140,20 +170,20 @@ const HtmlContent = () => {
                 {/* Expertise */}
                 <div style={S.section}>
                     <div style={S.wrapper}>
-                        <div style={S.tag}>system protocols</div>
-                        <h2 style={S.h2}>EXPERTISE</h2>
+                        <div style={S.tag}>&gt; EXECUTE ./EXPERTISE.SH</div>
+                        <h2 style={S.h2} className="glitch" data-text="CORE CAPABILITIES">CORE CAPABILITIES</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
-                            <div style={S.card}>
-                                <h3 style={S.h3}>AI & AUTOMATION</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Developing AI-driven workflows, LLM integrations, and custom automations.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h3 style={S.h3}>[AI & FINTECH]</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Specialized in AI implementations and FinTech infrastructure. Full-stack workflow precision.</p>
                             </div>
-                            <div style={S.card}>
-                                <h3 style={S.h3}>CORE TECH STACK</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>High-performance React.js, Next.js, Node.js, and Python systems.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h3 style={S.h3}>[INDUSTRY EXPERIENCE]</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>2 Years as a dedicated Software Engineer. Previous Customer Service experience at Dialog Axiata.</p>
                             </div>
-                            <div style={S.card}>
-                                <h3 style={S.h3}>FINTECH SYSTEMS</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Building scalable financial suites, dashboards, and role-based access controls.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h3 style={S.h3}>[CONTINUOUS LEARNING]</h3>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>4 Years active in Software Engineering. Deeply committed to self-learning and advanced systems.</p>
                             </div>
                         </div>
                     </div>
@@ -162,20 +192,20 @@ const HtmlContent = () => {
                 {/* Qualifications */}
                 <div style={S.section}>
                     <div style={S.wrapper}>
-                        <div style={S.tag}>engine dna</div>
-                        <h2 style={S.h2}>QUALIFICATIONS</h2>
+                        <div style={S.tag}>&gt; CAT QUALIFICATIONS.LOG</div>
+                        <h2 style={S.h2} className="glitch" data-text="DATABASE RECORDS">DATABASE RECORDS</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
-                            <div style={S.card}>
-                                <h4 style={S.h4}>FOUNDER @ OLIX HOLDINGS</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Leading an AI Automation Agency providing AI-driven efficiency for modern businesses.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h4 style={S.h4}>CMD: BSC (HONS) SE</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Graduated April this year. Issued by Birmingham City University, via Java Institute for Advanced Tech.</p>
                             </div>
-                            <div style={S.card}>
-                                <h4 style={S.h4}>FINTECH SOFTWARE ENGINEER</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Specializing in AI automation, advanced dashboard building, and web architectures.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h4 style={S.h4}>CMD: MPHIL SE (READING)</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>Currently following MPhil at IIC University, studied through Java Institute for Advanced Tech.</p>
                             </div>
-                            <div style={S.card}>
-                                <h4 style={S.h4}>EDUCATION & CONTENT</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>BSc (Hons) Software Engineering (Birmingham City Univ), MPhil Candidate. Managing "AI Hub". AAT Level 2.</p>
+                            <div style={S.card} className="hacker-card">
+                                <h4 style={S.h4}>CMD: COMMERCE DNA</h4>
+                                <p style={{ ...S.desc, maxWidth: "100%" }}>AAT 2nd Level Completed. Bridges technical engineering with advanced financial understanding.</p>
                             </div>
                         </div>
                     </div>
@@ -184,12 +214,12 @@ const HtmlContent = () => {
                 {/* Bio */}
                 <div style={S.sectionCenter}>
                     <div style={S.wrapperCenter}>
-                        <div style={{ ...S.tag, justifyContent: "center" }}>engineering dna</div>
-                        <h2 style={S.h2}>BRIDGING CORE SYSTEMS</h2>
+                        <div style={{ ...S.tag, justifyContent: "center" }}>&gt; WHOAMI</div>
+                        <h2 style={S.h2}>SYSTEM ARCHITECT</h2>
                         <p style={S.descCenter}>
-                            I am a dedicated Software Engineer based in Maharagama, Sri Lanka.
-                            Specializing in AI automation and high-performance web systems,
-                            I collaborate to develop custom dashboards, automated workflows, and robust applications.
+                            Based in Maharagama, Sri Lanka.<br />
+                            Specializing in AI automation and high-performance web systems.<br />
+                            I develop custom dashboards, automated workflows, and robust applications.
                         </p>
                     </div>
                 </div>
@@ -197,13 +227,13 @@ const HtmlContent = () => {
                 {/* Contact */}
                 <div style={S.sectionCenter}>
                     <div style={S.wrapperCenter}>
-                        <div style={{ ...S.tag, justifyContent: "center" }}>contact uplink</div>
-                        <h2 style={S.h2}>UPLINK</h2>
-                        <p style={S.descCenter}>Ready for elite automation commands.</p>
+                        <div style={{ ...S.tag, justifyContent: "center" }}>&gt; PING SERVER</div>
+                        <h2 style={S.h2} className="glitch" data-text="OPEN SOCKET">OPEN SOCKET</h2>
+                        <p style={S.descCenter}>Ready for elite automation commands. Send transmission.</p>
                         <a href="mailto:olixholdings@gmail.com" style={S.email}>
                             olixholdings@gmail.com
                         </a>
-                        <div style={S.footer}>ESTABLISHING CONNECTION...</div>
+                        <div style={S.footer}>CONNECTION ESTABLISHED_</div>
                     </div>
                 </div>
 
@@ -215,31 +245,51 @@ const HtmlContent = () => {
 // ── Main exported component ────────────────────────────────
 export const Experience = () => (
     <>
-        <color attach="background" args={["#000814"]} />
+        <color attach="background" args={["#000000"]} />
 
-        <ambientLight intensity={0.3} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} />
-        <pointLight position={[-10, -10, -10]} color="#00d4ff" intensity={3} />
+        <ambientLight intensity={0.5} color="#00ff00" />
+        <spotLight position={[0, 10, -20]} angle={0.5} penumbra={1} intensity={5} color="#00ffff" />
 
-        <ScrollControls pages={5} damping={0.25}>
+        <ScrollControls pages={5} damping={0.3}>
             <SceneContent />
 
+            {/* Hacker top and bottom grids */}
             <Grid
                 infiniteGrid
-                fadeDistance={35}
-                fadeStrength={6}
+                fadeDistance={100}
+                fadeStrength={5}
                 cellSize={1}
-                sectionSize={4}
-                sectionThickness={1.5}
-                sectionColor="#0088ff"
-                cellColor="#001133"
-                position={[0, -2.5, 0]}
+                sectionSize={5}
+                sectionThickness={1}
+                sectionColor="#00ff00"
+                cellColor="#003300"
+                position={[0, -2, 0]}
+            />
+            <Grid
+                infiniteGrid
+                fadeDistance={100}
+                fadeStrength={5}
+                cellSize={1}
+                sectionSize={5}
+                sectionThickness={1}
+                sectionColor="#00ff00"
+                cellColor="#003300"
+                position={[0, 10, 0]}
+                rotation={[Math.PI, 0, 0]} /* inverted ceiling grid */
             />
 
             <EffectComposer disableNormalPass>
-                <Bloom luminanceThreshold={1.0} mipmapBlur intensity={1.6} radius={0.4} />
-                <Noise opacity={0.04} />
-                <Vignette eskil={false} offset={0.1} darkness={1.2} />
+                <Bloom luminanceThreshold={0.2} mipmapBlur intensity={1.5} radius={0.8} />
+                <Noise opacity={0.08} />
+                <Vignette eskil={false} offset={0.1} darkness={1.5} />
+                <Glitch 
+                    delay={[1.5, 3.5]} // min and max delay
+                    duration={[0.1, 0.3]} // min and max duration
+                    strength={[0.02, 0.04]} // min and max strength
+                    mode={GlitchMode.SPORADIC}
+                    active
+                    ratio={0.1}
+                />
             </EffectComposer>
 
             <HtmlContent />

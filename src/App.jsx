@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import AIAssistant from "./components/AIAssistant";
 import Cursor from "./components/Cursor";
+import Navbar from "./components/Navbar";
 import { Suspense } from "react";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Experience />
         </Canvas>
         <AIAssistant />
+        <Navbar />
       </Suspense>
     </div>
   );
