@@ -217,7 +217,7 @@ const HtmlContent = () => {
                         <div style={{ ...S.tag, justifyContent: "center" }}>&gt; WHOAMI</div>
                         <h2 style={S.h2}>SYSTEM ARCHITECT</h2>
                         <p style={S.descCenter}>
-                            Based in Maharagama, Sri Lanka.<br />
+                            Based in Sri Lanka.<br />
                             Specializing in AI automation and high-performance web systems.<br />
                             I develop custom dashboards, automated workflows, and robust applications.
                         </p>
@@ -243,14 +243,18 @@ const HtmlContent = () => {
 };
 
 // ── Main exported component ────────────────────────────────
-export const Experience = () => (
+export const Experience = () => {
+    const { viewport } = useThree();
+    const isMobile = viewport.width < 8;
+
+    return (
     <>
         <color attach="background" args={["#000000"]} />
 
         <ambientLight intensity={0.5} color="#00ff00" />
         <spotLight position={[0, 10, -20]} angle={0.5} penumbra={1} intensity={5} color="#00ffff" />
 
-        <ScrollControls pages={5} damping={0.3}>
+        <ScrollControls pages={isMobile ? 3.5 : 5} damping={0.3}>
             <SceneContent />
 
             {/* Hacker top and bottom grids */}
@@ -295,4 +299,5 @@ export const Experience = () => (
             <HtmlContent />
         </ScrollControls>
     </>
-);
+    );
+};

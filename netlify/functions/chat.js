@@ -15,7 +15,7 @@ Knowledge Base:
 - Superpower: Highly driven by self-learning, bridging sharp technical programming with commerce logic.
 - Content Creation: Manages "AI Hub" on YouTube & Facebook to foster a tech-savvy community in Sri Lanka.
 - Tech Stack: JavaScript (ES6+), TypeScript, Python, React.js, Next.js, Tailwind CSS, Node.js, Firebase, Google Apps Script.
-- Location & Contact: Maharagama, Sri Lanka | olixholdings@gmail.com
+- Location & Contact: Sri Lanka | olixholdings@gmail.com
 
 When answering questions about Damindu, Olix Holdings, or the AI Hub, use the knowledge above but converse naturally like a helpful AI assistant. Answer technical questions accurately. If they ask to hire him, provide the contact email. Do not act like a rigid robot; be a fluid conversational AI.
 `;
@@ -41,10 +41,11 @@ export const handler = async (event) => {
 
         // Format history for Gemini API. 
         // Gemini API requires alternating user/model roles, and the first message MUST be from a 'user'.
-        // So we filter out the initial welcome message the bot sends on load if it's there.
         let validHistory = history || [];
-        if (validHistory.length > 0 && validHistory[0].content === 'Establishing secure cyber uplink... Connection verified. I am the Advanced Olix Assistant. Ask me about Damindu Prasad, Olix Holdings, or AI Architecture.') {
-            validHistory = validHistory.slice(1);
+        
+        // Remove any leading bot messages (like the welcome message) to ensure it starts with a 'user'
+        while (validHistory.length > 0 && validHistory[0].role === 'bot') {
+            validHistory.shift();
         }
 
         const formattedHistory = validHistory.map(msg => ({
