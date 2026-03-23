@@ -634,3 +634,84 @@ p.description {
     font-size: clamp(1.8rem, 12vw, 3rem);
   }
 }
+
+/* ────────────── Navbar ────────────── */
+.navbar-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 15, 0, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid #00ff00;
+  padding: 0.8rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  z-index: 9000;
+  font-family: 'Share Tech Mono', monospace;
+  color: #00ff00;
+  box-shadow: 0 -5px 15px rgba(0,255,0,0.1);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-brand span {
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-link {
+  color: #00ffff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+  text-shadow: 0 0 5px rgba(0,255,255,0.5);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #fff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.nav-divider {
+  color: #005500;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    bottom: auto;
+    top: 0;
+    border-top: none;
+    border-bottom: 1px solid #00ff00;
+    box-shadow: 0 5px 15px rgba(0,255,0,0.1);
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .navbar-links {
+    gap: 0.8rem;
+  }
+  
+  .nav-link {
+    font-size: 0.85rem;
+  }
+}

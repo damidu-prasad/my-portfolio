@@ -5,54 +5,66 @@ import { Float, MeshDistortMaterial, Environment } from '@react-three/drei';
 
 // ── 3D Mini Robot Avatar ──────────────────────────────────
 const MiniRobot = ({ isTyping }) => {
-    const eyeRef = useRef();
-    const ringRef = useRef();
+    const headRef = useRef();
     
     useFrame((state, delta) => {
-        if (ringRef.current) {
-            ringRef.current.rotation.x += delta * 2;
-            ringRef.current.rotation.y += delta * 3;
-        }
-        if (eyeRef.current) {
-            // Pulse the eye when typing
+        if (headRef.current) {
+            // Hover and slight look around
+            headRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+            headRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.2;
+            
+            // Jitter when typing
             if (isTyping) {
-                eyeRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 15) * 0.1);
-                eyeRef.current.material.emissiveIntensity = 2 + Math.abs(Math.sin(state.clock.elapsedTime * 10)) * 2;
+                headRef.current.rotation.z = (Math.random() - 0.5) * 0.1;
+                headRef.current.rotation.x = (Math.random() - 0.5) * 0.1;
             } else {
-                eyeRef.current.scale.setScalar(1);
-                eyeRef.current.material.emissiveIntensity = 2;
+                headRef.current.rotation.z = THREE.MathUtils.lerp(headRef.current.rotation.z, 0, 0.1);
+                headRef.current.rotation.x = THREE.MathUtils.lerp(headRef.current.rotation.x, 0, 0.1);
             }
         }
     });
 
     return (
-        <Float speed={5} rotationIntensity={0.5} floatIntensity={2}>
-            {/* Core Body */}
-            <mesh>
-                <sphereGeometry args={[1.2, 32, 32]} />
+        <group ref={headRef} scale={1.2}>
+            {/* Box Head */}
+            <mesh position={[0, 0, 0]}>
+                <boxGeometry args={[1.5, 1.2, 1.5]} />
                 <meshStandardMaterial color="#051414" metalness={0.8} roughness={0.2} wireframe={true} />
             </mesh>
             
-            {/* Inner Glitched Core */}
-            <mesh>
-                <icosahedronGeometry args={[0.8, 1]} />
-                <MeshDistortMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={isTyping ? 1.5 : 0.5} distort={isTyping ? 0.8 : 0.2} speed={isTyping ? 10 : 2} />
+            {/* Left Eye */}
+            <mesh position={[-0.4, 0.1, 0.76]}>
+                <sphereGeometry args={[0.2, 16, 16]} />
+                <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={isTyping ? 3 : 1} />
+            </mesh>
+            
+            {/* Right Eye */}
+            <mesh position={[0.4, 0.1, 0.76]}>
+                <sphereGeometry args={[0.2, 16, 16]} />
+                <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={isTyping ? 3 : 1} />
             </mesh>
 
-            {/* Glowing Eye */}
-            <mesh ref={eyeRef} position={[0, 0, 1.1]}>
-                <sphereGeometry args={[0.3, 16, 16]} />
-                <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={2} />
+            {/* Antenna Pole */}
+            <mesh position={[0, 0.8, 0]}>
+                <cylinderGeometry args={[0.05, 0.05, 0.5]} />
+                <meshStandardMaterial color="#00ffff" emissive="#00ffff" />
+            </mesh>
+            
+            {/* Antenna Bulb */}
+            <mesh position={[0, 1.1, 0]}>
+                <sphereGeometry args={[0.15, 16, 16]} />
+                <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={isTyping ? 5 : 2} />
             </mesh>
 
-            {/* Orbiting Ring */}
-            <mesh ref={ringRef}>
-                <torusGeometry args={[1.8, 0.05, 16, 100]} />
-                <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={1.5} />
+            {/* Floating rings */}
+            <mesh rotation={[Math.PI/2, 0, 0]}>
+                <torusGeometry args={[1.5, 0.02, 16, 100]} />
+                <meshStandardMaterial color="#00ff00" emissive="#00ff00" />
             </mesh>
+            
             <ambientLight intensity={1} color="#00ff00" />
             <pointLight position={[0, 0, 2]} intensity={5} color="#00ff00" />
-        </Float>
+        </group>
     );
 };
 
@@ -169,7 +181,7 @@ const AIAssistant = () => {
                             )}
                         </div>
                     ))}
-                    {isTyping && <div className="message bot" style={{ opacity: 0.7, fontStyle: 'italic', color: '#00ff00' }}>> Analyzing Core Data...</div>}
+                    {isTyping && <div className="message bot" style={{ opacity: 0.7, fontStyle: 'italic', color: '#00ff00' }}>&gt; Analyzing Core Data...</div>}
                 </div>
 
                 <div className="chat-input-area" style={{ background: '#001100', borderTop: '1px solid #00ff00' }}>
