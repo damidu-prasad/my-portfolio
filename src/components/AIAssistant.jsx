@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Sparkles, Bot, Send, X, TerminalSquare } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, MeshDistortMaterial, Environment } from '@react-three/drei';
+import * as THREE from 'three';
 
 // ── 3D Mini Robot Avatar ──────────────────────────────────
 const MiniRobot = ({ isTyping }) => {

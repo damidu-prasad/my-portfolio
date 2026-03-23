@@ -1,3 +1,4 @@
+import React, { useRef, useMemo } from 'react';
 import {
     Float,
     Scroll,
@@ -7,10 +8,21 @@ import {
     Line,
 } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useRef, useMemo } from "react";
 import * as THREE from "three";
 import { Bloom, EffectComposer, Noise, Vignette, Glitch } from "@react-three/postprocessing";
-import { GlitchMode } from "postprocessing";
+
+// ── Hacker Content Data ─────────────────────────────────
+const expertiseList = [
+    { title: "[AI & FINTECH]", desc: "Specialized in AI implementations and FinTech infrastructure. Full-stack workflow precision." },
+    { title: "[INDUSTRY EXPERIENCE]", desc: "2 Years as a dedicated Software Engineer. Previous Customer Service experience at Dialog Axiata." },
+    { title: "[CONTINUOUS LEARNING]", desc: "4 Years active in Software Engineering. Deeply committed to self-learning and advanced systems." }
+];
+
+const qualificationsList = [
+    { title: "CMD: BSC (HONS) SE", desc: "Graduated April this year. Issued by Birmingham City University, via Java Institute for Advanced Tech." },
+    { title: "CMD: MPHIL SE (READING)", desc: "Currently following MPhil at IIC University, studied through Java Institute for Advanced Tech." },
+    { title: "CMD: COMMERCE DNA", desc: "AAT 2nd Level Completed. Bridges technical engineering with advanced financial understanding." }
+];
 
 // ── Hacker Data Particles ─────────────────────────────────
 const DataStream = () => {
@@ -140,7 +152,7 @@ const S = {
     desc: { fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(0, 255, 0, 0.7)", lineHeight: 1.7, maxWidth: "540px" },
     descCenter: { fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(0, 255, 0, 0.7)", lineHeight: 1.7, maxWidth: "540px", margin: "0 auto" },
     grid3: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginTop: "1rem" },
-    mobileStack: { display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1rem", paddingBottom: "2rem" },
+    mobileStack: { display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem", paddingBottom: "1rem" },
     card: { background: "rgba(0, 15, 0, 0.8)", border: "1px solid #00ff00", borderRadius: "4px", padding: "1.5rem 1.8rem", boxShadow: "0 0 15px rgba(0, 255, 0, 0.1) inset" },
     email: { display: "inline-block", fontSize: "clamp(1.1rem, 3.5vw, 1.8rem)", fontWeight: 700, color: "#00ff00", textDecoration: "none", margin: "1rem auto 0", borderBottom: "2px solid #00ff00", paddingBottom: "4px" },
     footer: { fontSize: "0.8rem", letterSpacing: "0.2rem", color: "#00ffff", opacity: 0.8, textTransform: "uppercase", marginTop: "1.5rem", textAlign: "center", width: "100%" },
@@ -173,18 +185,16 @@ const HtmlContent = () => {
                         <div style={S.tag}>&gt; EXECUTE ./EXPERTISE.SH</div>
                         <h2 style={S.h2} className="glitch" data-text="CORE CAPABILITIES">CORE CAPABILITIES</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
-                            <div style={S.card} className="hacker-card">
-                                <h3 style={S.h3}>[AI & FINTECH]</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Specialized in AI implementations and FinTech infrastructure. Full-stack workflow precision.</p>
-                            </div>
-                            <div style={S.card} className="hacker-card">
-                                <h3 style={S.h3}>[INDUSTRY EXPERIENCE]</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>2 Years as a dedicated Software Engineer. Previous Customer Service experience at Dialog Axiata.</p>
-                            </div>
-                            <div style={S.card} className="hacker-card">
-                                <h3 style={S.h3}>[CONTINUOUS LEARNING]</h3>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>4 Years active in Software Engineering. Deeply committed to self-learning and advanced systems.</p>
-                            </div>
+                            {expertiseList.map((item, i) => (
+                                <div 
+                                    key={i}
+                                    style={S.card} 
+                                    className="hacker-card card-animate"
+                                >
+                                    <h3 style={S.h3}>{item.title}</h3>
+                                    <p style={{ ...S.desc, maxWidth: "100%" }}>{item.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -195,46 +205,49 @@ const HtmlContent = () => {
                         <div style={S.tag}>&gt; CAT QUALIFICATIONS.LOG</div>
                         <h2 style={S.h2} className="glitch" data-text="DATABASE RECORDS">DATABASE RECORDS</h2>
                         <div style={isMobile ? S.mobileStack : S.grid3}>
-                            <div style={S.card} className="hacker-card">
-                                <h4 style={S.h4}>CMD: BSC (HONS) SE</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Graduated April this year. Issued by Birmingham City University, via Java Institute for Advanced Tech.</p>
-                            </div>
-                            <div style={S.card} className="hacker-card">
-                                <h4 style={S.h4}>CMD: MPHIL SE (READING)</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>Currently following MPhil at IIC University, studied through Java Institute for Advanced Tech.</p>
-                            </div>
-                            <div style={S.card} className="hacker-card">
-                                <h4 style={S.h4}>CMD: COMMERCE DNA</h4>
-                                <p style={{ ...S.desc, maxWidth: "100%" }}>AAT 2nd Level Completed. Bridges technical engineering with advanced financial understanding.</p>
-                            </div>
+                            {qualificationsList.map((item, i) => (
+                                <div 
+                                    key={i}
+                                    style={S.card} 
+                                    className="hacker-card card-animate"
+                                >
+                                    <h4 style={S.h4}>{item.title}</h4>
+                                    <p style={{ ...S.desc, maxWidth: "100%" }}>{item.desc}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Bio */}
-                <div style={S.sectionCenter}>
-                    <div style={S.wrapperCenter}>
-                        <div style={{ ...S.tag, justifyContent: "center" }}>&gt; WHOAMI</div>
-                        <h2 style={S.h2}>SYSTEM ARCHITECT</h2>
-                        <p style={S.descCenter}>
-                            Based in Sri Lanka.<br />
-                            Specializing in AI automation and high-performance web systems.<br />
-                            I develop custom dashboards, automated workflows, and robust applications.
-                        </p>
+                {/* Bio & Contact Combined for Mobile to remove gaps */}
+                <div style={isMobile ? { ...S.sectionCenter, minHeight: "auto", paddingTop: "5vh", paddingBottom: "15vh", gap: "4vh" } : undefined}>
+                    
+                    {/* Bio */}
+                    <div style={isMobile ? undefined : S.sectionCenter}>
+                        <div style={S.wrapperCenter}>
+                            <div style={{ ...S.tag, justifyContent: "center" }}>&gt; WHOAMI</div>
+                            <h2 style={S.h2}>SYSTEM ARCHITECT</h2>
+                            <p style={S.descCenter}>
+                                Based in Sri Lanka.<br />
+                                Specializing in AI automation and high-performance web systems.<br />
+                                I develop custom dashboards, automated workflows, and robust applications.
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                {/* Contact */}
-                <div style={S.sectionCenter}>
-                    <div style={S.wrapperCenter}>
-                        <div style={{ ...S.tag, justifyContent: "center" }}>&gt; PING SERVER</div>
-                        <h2 style={S.h2} className="glitch" data-text="OPEN SOCKET">OPEN SOCKET</h2>
-                        <p style={S.descCenter}>Ready for elite automation commands. Send transmission.</p>
-                        <a href="mailto:olixholdings@gmail.com" style={S.email}>
-                            olixholdings@gmail.com
-                        </a>
-                        <div style={S.footer}>CONNECTION ESTABLISHED_</div>
+                    {/* Contact */}
+                    <div style={isMobile ? {marginTop: "4vh"} : S.sectionCenter}>
+                        <div style={S.wrapperCenter}>
+                            <div style={{ ...S.tag, justifyContent: "center" }}>&gt; PING SERVER</div>
+                            <h2 style={S.h2} className="glitch" data-text="OPEN SOCKET">OPEN SOCKET</h2>
+                            <p style={S.descCenter}>Ready for elite automation commands. Send transmission.</p>
+                            <a href="mailto:olixholdings@gmail.com" style={S.email}>
+                                olixholdings@gmail.com
+                            </a>
+                            <div style={S.footer}>CONNECTION ESTABLISHED_</div>
+                        </div>
                     </div>
+
                 </div>
 
             </div>
@@ -254,7 +267,8 @@ export const Experience = () => {
         <ambientLight intensity={0.5} color="#00ff00" />
         <spotLight position={[0, 10, -20]} angle={0.5} penumbra={1} intensity={5} color="#00ffff" />
 
-        <ScrollControls pages={isMobile ? 3.5 : 5} damping={0.3}>
+        {/* Increase scroll pages slightly on mobile since content stacks vertically and needs to reach the bottom without cutting off */}
+        <ScrollControls pages={isMobile ? 5.2 : 5} damping={0.3}>
             <SceneContent />
 
             {/* Hacker top and bottom grids */}
@@ -290,7 +304,6 @@ export const Experience = () => {
                     delay={[1.5, 3.5]} // min and max delay
                     duration={[0.1, 0.3]} // min and max duration
                     strength={[0.02, 0.04]} // min and max strength
-                    mode={GlitchMode.SPORADIC}
                     active
                     ratio={0.1}
                 />

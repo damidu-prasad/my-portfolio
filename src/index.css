@@ -635,6 +635,16 @@ p.description {
   }
 }
 
+/* Card Load Animation */
+@keyframes card-glitch-in {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card-animate {
+  animation: card-glitch-in 0.8s ease-out forwards;
+}
+
 /* ────────────── Navbar ────────────── */
 .navbar-container {
   position: fixed;
